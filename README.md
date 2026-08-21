@@ -470,13 +470,13 @@ The expanded hardening suite subsequently completed **63 assertions with 0 failu
 
 ## Current Status
 
-Mimic Sync V1 is a **Release Candidate**.
+Mimic Sync V1 is **Released / Release Verified**.
 
 The V1 feature set is frozen. The core synchronization contract has passed a real Windows manual acceptance trial; the original automated fixture baseline passed **42/42**; and the expanded V1 hardening suite passed **63/63**. The Configurator has also completed browser-side manual QA for its V1 configuration workflow.
 
-The Release Candidate includes execution-time drift protection, stronger reparse-point path validation, staged ADD writes, best-effort UPDATE rollback, exact relative-path Sync Plan output, improved BAT/config UX, and expanded negative/boundary verification.
+The released V1 includes execution-time drift protection, stronger reparse-point path validation, staged ADD writes, best-effort UPDATE rollback, exact relative-path Sync Plan output, improved BAT/config UX, and expanded negative/boundary verification.
 
-The remaining release step is repository/release-commit verification after this RC package is placed in its final Git repository. No additional V1 features are planned before release.
+The V1 RC was committed to the public `main` branch and the intended release commit was verified remotely. V1 is now closed for feature development; future capabilities belong in V2/Future unless required to fix a release-blocking defect.
 
 See:
 

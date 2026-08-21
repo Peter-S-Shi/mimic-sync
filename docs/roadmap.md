@@ -48,7 +48,7 @@ V1 does not perform mirror synchronization, bidirectional synchronization, histo
 
 ## Current Development Snapshot
 
-The V1 feature set is frozen. Product hardening has passed on the target Windows environment, and the project has entered Release Candidate status.
+The V1 feature set is frozen. Product hardening passed on the target Windows environment, the RC was committed to the public `main` branch, and the intended release commit was verified remotely. Mimic Sync V1 is now **Released / Release Verified**.
 
 | Milestone | Current status |
 |---|---|
@@ -57,11 +57,11 @@ The V1 feature set is frozen. Product hardening has passed on the target Windows
 | Milestone 3 — Web Configurator | Browser manual QA passed; JSON/CLI workflow confirmed understandable |
 | Milestone 4 — Verification | Baseline suite: **42/42 passed**; expanded hardening suite: **63/63 passed** |
 | Milestone 5 — V1 Product Polish | Complete; BAT/config UX and exact-path Sync Plan polished |
-| Milestone 6 — Hardening / RC | **Hardening PASS**; local V1 Release Candidate prepared |
+| Milestone 6 — Hardening / RC | **Hardening PASS**; RC committed and release commit remotely verified |
 
 Feature Freeze remains active. New capabilities belong in V2/Future unless required to fix a V1 release-blocking correctness, safety, robustness, or documentation defect.
 
-The remaining release action is to place the RC in its final Git repository and verify the intended release commit. That repository step is intentionally kept separate from the already-completed product hardening.
+Release governance closure is complete: the RC was placed in the final Git repository and the intended release commit was verified remotely. No additional V1 feature work is planned.
 
 ---
 
@@ -690,7 +690,7 @@ Local product/repository audit status:
 - destructive mirror/purge command audit: **PASS**;
 - Configurator JavaScript syntax audit: **PASS**.
 
-The local RC satisfies the product-level exit criteria. The final criterion — verification of the intended release commit — is completed after the RC is committed to its final Git repository.
+The local RC satisfied the product-level exit criteria. The final criterion — verification of the intended release commit — was completed after the RC was committed to the public `main` branch. V1 release governance is therefore closed.
 
 ---
 

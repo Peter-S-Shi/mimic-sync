@@ -1,0 +1,20 @@
+{
+  "source": "D:\\MimicSync\\Shared-Resources",
+  "targets": [
+    {
+      "name": "Project Alpha",
+      "path": "D:\\MimicSync\\Project-Alpha",
+      "mode": "add-update"
+    },
+    {
+      "name": "Project Beta",
+      "path": "D:\\MimicSync\\Project-Beta",
+      "mode": "add-only"
+    },
+    {
+      "name": "Project Gamma",
+      "path": "D:\\MimicSync\\Project-Gamma",
+      "mode": "update-only"
+    }
+  ]
+}

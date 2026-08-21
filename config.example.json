@@ -1,0 +1,20 @@
+{
+  "source": "D:\\Example\\Mimic",
+  "targets": [
+    {
+      "name": "Target A",
+      "path": "D:\\Example\\Target-A",
+      "mode": "add-update"
+    },
+    {
+      "name": "Target B",
+      "path": "D:\\Example\\Target-B",
+      "mode": "add-only"
+    },
+    {
+      "name": "Target C",
+      "path": "D:\\Example\\Target-C",
+      "mode": "update-only"
+    }
+  ]
+}

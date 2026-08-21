@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mimic Sync Configurator</title>
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --panel:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --border:#dbe2ea;
+    --accent:#3157d5;
+    --accent-soft:#eef2ff;
+    --good:#0f766e;
+    --warn:#b45309;
+    --danger:#b42318;
+    --shadow:0 10px 30px rgba(31,41,55,.08);
+    --radius:16px;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+  }
+
+  .app{
+    max-width:1120px;
+    margin:0 auto;
+    padding:28px 18px 56px;
+  }
+
+  .hero{
+    background:linear-gradient(135deg,#fff,#eef2ff);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:28px;
+    margin-bottom:18px;
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+
+  h1{
+    margin:10px 0 8px;
+    font-size:31px;
+    line-height:1.2;
+  }
+
+  .hero p{
+    margin:7px 0;
+    color:var(--muted);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .stack{
+    display:grid;
+    gap:18px;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px;
+  }
+
+  .panel h2{
+    margin:0 0 6px;
+    font-size:21px;
+  }
+
+  .desc{
+    margin:0 0 18px;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  label{
+    display:block;
+    font-weight:750;
+    margin-bottom:7px;
+  }
+
+  input[type="text"], select, textarea{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:11px 12px;
+    font:inherit;
+    color:var(--text);
+    background:#fff;
+    outline:none;
+  }
+
+  input[type="text"]:focus, select:focus, textarea:focus{
+    border-color:#9ab0f5;
+    box-shadow:0 0 0 3px rgba(49,87,213,.08);
+  }
+
+  .field{
+    margin-bottom:15px;
+  }
+
+  .hint{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:12.5px;
+  }
+
+  .target-card{
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px;
+    margin:12px 0;
+    background:#fbfcff;
+  }
+
+  .target-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .target-title{
+    font-weight:850;
+  }
+
+  .icon-btn{
+    border:1px solid #f1c8c4;
+    color:var(--danger);
+    background:#fff7f6;
+    border-radius:10px;
+    padding:7px 10px;
+    font:inherit;
+    cursor:pointer;
+  }
+
+  .icon-btn:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+  }
+
+  .mode-grid{
+    display:grid;
+    gap:8px;
+  }
+
+  .mode-option{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#fff;
+    cursor:pointer;
+  }
+
+  .mode-option input{margin-top:4px}
+  .mode-option strong{display:block}
+  .mode-option small{display:block;color:var(--muted);margin-top:2px}
+
+  details{
+    margin-top:12px;
+    border-top:1px dashed #e5e7eb;
+    padding-top:10px;
+  }
+
+  summary{
+    cursor:pointer;
+    color:var(--accent);
+    font-weight:800;
+  }
+
+  .advanced-body{
+    margin-top:10px;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:14px;
+  }
+
+  button{
+    border:0;
+    border-radius:12px;
+    padding:10px 14px;
+    font:inherit;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .primary{
+    color:#fff;
+    background:var(--accent);
+  }
+
+  .secondary{
+    color:var(--text);
+    background:#eef1f5;
+  }
+
+  .ghost{
+    color:var(--accent);
+    background:#fff;
+    border:1px solid #c8d3f4;
+  }
+
+  .summary-card{
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:13px 14px;
+    margin:10px 0;
+    background:#fafbff;
+  }
+
+  .summary-card strong{
+    display:block;
+    margin-bottom:3px;
+  }
+
+  .summary-line{
+    font-size:13px;
+    color:var(--muted);
+    word-break:break-word;
+  }
+
+  .code{
+    white-space:pre-wrap;
+    word-break:break-word;
+    background:#101827;
+    color:#e5e7eb;
+    border-radius:14px;
+    padding:15px;
+    font-family:Consolas,Monaco,"Courier New",monospace;
+    font-size:12.5px;
+    min-height:84px;
+    overflow:auto;
+  }
+
+  .notice{
+    border-radius:12px;
+    padding:11px 12px;
+    font-size:13px;
+    margin-top:12px;
+  }
+
+  .notice.info{
+    background:#eff6ff;
+    color:#1e40af;
+    border:1px solid #bfdbfe;
+  }
+
+  .notice.good{
+    background:#ecfdf3;
+    color:#067647;
+    border:1px solid #abefc6;
+  }
+
+  .notice.warn{
+    background:#fff7ed;
+    color:#9a3412;
+    border:1px solid #fed7aa;
+  }
+
+  .guide-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+    font-size:13px;
+  }
+
+  .guide-table th,.guide-table td{
+    border-bottom:1px solid #edf0f4;
+    padding:9px 8px;
+    text-align:left;
+    vertical-align:top;
+  }
+
+  .guide-table th{
+    color:#4b5563;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+
+  .footer{
+    margin-top:18px;
+    text-align:center;
+    color:var(--muted);
+    font-size:12.5px;
+  }
+
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero">
+    <span class="badge">Mimic Sync · V1 Configurator</span>
+    <h1>Build a Sync Profile visually</h1>
+    <p>Choose one Source / Mimic folder, add as many Targets as needed, assign a synchronization policy to each Target, then export a JSON config and copy the ready-to-run PowerShell command.</p>
+    <p><strong>Important:</strong> this page configures intent only. The PowerShell CLI performs the real filesystem scan, generates the actual Sync Plan, asks for <code>Y/n</code> confirmation, and executes changes.</p>
+  </section>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="panel">
+        <h2>1. Source / Mimic Folder</h2>
+        <p class="desc">The baseline folder whose content may be added to or used to update configured Targets.</p>
+
+        <div class="field">
+          <label for="sourcePath">Source path</label>
+          <input id="sourcePath" type="text" placeholder="D:\Shared\Mimic" />
+          <div class="hint">V1 uses manual entry or pasted Windows paths. The Configurator does not directly access your filesystem.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>2. Targets</h2>
+        <p class="desc">Each Target can use its own synchronization policy.</p>
+
+        <div id="targets"></div>
+
+        <div class="actions">
+          <button class="ghost" id="addTargetBtn" type="button">+ Add Target</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="panel">
+        <h2>3. Configuration Summary</h2>
+        <p class="desc">This summarizes what you configured. It is not the actual filesystem-derived Sync Plan.</p>
+
+        <div id="summary"></div>
+        <div id="validationMessage"></div>
+      </section>
+
+      <section class="panel">
+        <h2>4. Export</h2>
+        <p class="desc">Download the profile as <code>mimic-sync.config.json</code>. Place it next to <code>mimic-sync.ps1</code> (or change the command's <code>-Config</code> path), then run the CLI from the repository root.</p>
+
+        <div class="field">
+          <label>Generated JSON</label>
+          <div id="jsonOutput" class="code"></div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="downloadBtn" type="button">Download Config</button>
+          <button class="ghost" id="copyJsonBtn" type="button">Copy JSON</button>
+        </div>
+
+        <div class="field" style="margin-top:18px">
+          <label>Ready-to-run CLI command</label>
+          <div id="cliOutput" class="code"></div>
+        </div>
+
+        <div class="actions">
+          <button class="ghost" id="copyCliBtn" type="button">Copy CLI Command</button>
+        </div>
+
+        <div class="notice info">
+          The Configurator does not scan your folders. After you place the exported config where the command can find it, the CLI will scan the real folders, show actual <strong>ADD</strong> / <strong>UPDATE</strong> actions, ask <strong>Proceed with sync? [Y/n]</strong>, then execute only after confirmation.
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>5. Parameter Guide</h2>
+        <p class="desc">Common V1 concepts in plain language.</p>
+
+        <table class="guide-table">
+          <thead>
+            <tr><th>Concept</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Source</strong></td><td>The baseline folder that provides shared content.</td></tr>
+            <tr><td><strong>Target</strong></td><td>A destination folder evaluated independently against the Source.</td></tr>
+            <tr><td><strong>Add Only</strong></td><td>Add missing Source content, but never overwrite an existing Target item.</td></tr>
+            <tr><td><strong>Update Only</strong></td><td>Update differing items that already exist in the Target, but do not introduce missing Source items.</td></tr>
+            <tr><td><strong>Add + Update</strong></td><td>Add missing Source content and update differing existing content.</td></tr>
+            <tr><td><strong>Target-only</strong></td><td>Content that exists only in a Target. V1 leaves it untouched.</td></tr>
+            <tr><td><strong>Sync Plan</strong></td><td>The CLI's real filesystem-derived action list shown before any write.</td></tr>
+            <tr><td><strong>-Config</strong></td><td>PowerShell parameter pointing to the JSON Sync Profile.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="notice warn">
+          V1 does not delete Target-only content, perform mirror synchronization, classify stale/exclusive history, detect renames, or use Junction-based shared references.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="footer">
+    Mimic Sync V1 · Configuration first, preview before mutation, Target ownership preserved.
+  </div>
+</div>
+
+<script>
+const MODES = [
+  {
+    value: "add-update",
+    label: "Add + Update",
+    help: "Add missing Source content and update differing existing content."
+  },
+  {
+    value: "add-only",
+    label: "Add Only",
+    help: "Add missing Source content, but do not overwrite existing Target content."
+  },
+  {
+    value: "update-only",
+    label: "Update Only",
+    help: "Update differing content only when it already exists in the Target."
+  }
+];
+
+let targets = [
+  {
+    id: cryptoRandomId(),
+    name: "Target A",
+    path: "",
+    mode: "add-update"
+  }
+];
+
+function cryptoRandomId(){
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function nextTargetName(){
+  const used = new Set(targets.map(t => t.name.trim().toLowerCase()));
+
+  for (let i = 0; i < 26; i++) {
+    const candidate = `Target ${String.fromCharCode(65 + i)}`;
+    if (!used.has(candidate.toLowerCase())) return candidate;
+  }
+
+  let number = 27;
+  while (used.has(`target ${number}`)) number++;
+  return `Target ${number}`;
+}
+
+function renderTargets(){
+  const root = document.getElementById("targets");
+  root.innerHTML = "";
+
+  targets.forEach((target, index) => {
+    const card = document.createElement("div");
+    card.className = "target-card";
+
+    const modesHtml = MODES.map(mode => `
+      <label class="mode-option">
+        <input
+          type="radio"
+          name="mode-${target.id}"
+          value="${mode.value}"
+          ${target.mode === mode.value ? "checked" : ""}
+          onchange="updateTargetMode('${target.id}', this.value)"
+        />
+        <span>
+          <strong>${mode.label}</strong>
+          <small>${mode.help}</small>
+        </span>
+      </label>
+    `).join("");
+
+    card.innerHTML = `
+      <div class="target-head">
+        <div class="target-title">Target ${index + 1}</div>
+        <button
+          type="button"
+          class="icon-btn"
+          onclick="removeTarget('${target.id}')"
+          ${targets.length === 1 ? "disabled" : ""}
+        >− Remove</button>
+      </div>
+
+      <div class="field">
+        <label>Name</label>
+        <input
+          type="text"
+          value="${escapeHtml(target.name)}"
+          placeholder="e.g. Codex Skills"
+          oninput="updateTargetField('${target.id}', 'name', this.value)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Path</label>
+        <input
+          type="text"
+          value="${escapeHtml(target.path)}"
+          placeholder="D:\\Example\\Target-A"
+          oninput="updateTargetField('${target.id}', 'path', this.value)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Synchronization policy</label>
+        <div class="mode-grid">${modesHtml}</div>
+      </div>
+
+      <details>
+        <summary>Advanced</summary>
+        <div class="advanced-body">
+          <p><strong>V1 safety boundary:</strong> Target-only content is preserved under every mode.</p>
+          <p>Historical stale/exclusive classification, rename detection, deletion controls, and Junction/shared-reference behavior are intentionally reserved for later versions.</p>
+        </div>
+      </details>
+    `;
+
+    root.appendChild(card);
+  });
+
+  refreshOutputs();
+}
+
+function addTarget(){
+  targets.push({
+    id: cryptoRandomId(),
+    name: nextTargetName(),
+    path: "",
+    mode: "add-update"
+  });
+  renderTargets();
+}
+
+function removeTarget(id){
+  if (targets.length <= 1) return;
+  targets = targets.filter(t => t.id !== id);
+  renderTargets();
+}
+
+function updateTargetField(id, field, value){
+  const target = targets.find(t => t.id === id);
+  if (!target) return;
+  target[field] = value;
+  refreshOutputs();
+}
+
+function updateTargetMode(id, value){
+  const target = targets.find(t => t.id === id);
+  if (!target) return;
+  target.mode = value;
+  refreshOutputs();
+}
+
+function getProfile(){
+  return {
+    source: document.getElementById("sourcePath").value.trim(),
+    targets: targets.map(t => ({
+      name: t.name.trim(),
+      path: t.path.trim(),
+      mode: t.mode
+    }))
+  };
+}
+
+function validateProfile(profile){
+  const errors = [];
+
+  if (!profile.source) {
+    errors.push("Source path is required.");
+  }
+
+  if (!profile.targets.length) {
+    errors.push("At least one Target is required.");
+  }
+
+  const names = new Set();
+  const paths = new Set();
+
+  profile.targets.forEach((target, index) => {
+    const label = `Target ${index + 1}`;
+
+    if (!target.name) errors.push(`${label}: name is required.`);
+    if (!target.path) errors.push(`${label}: path is required.`);
+    if (!MODES.some(m => m.value === target.mode)) {
+      errors.push(`${label}: unsupported synchronization mode.`);
+    }
+
+    const nameKey = target.name.toLowerCase();
+    if (target.name && names.has(nameKey)) {
+      errors.push(`${label}: duplicate Target name.`);
+    }
+    names.add(nameKey);
+
+    const pathKey = target.path.toLowerCase();
+    if (target.path && paths.has(pathKey)) {
+      errors.push(`${label}: duplicate Target path.`);
+    }
+    paths.add(pathKey);
+  });
+
+  return errors;
+}
+
+function modeLabel(value){
+  const mode = MODES.find(m => m.value === value);
+  return mode ? mode.label : value;
+}
+
+function renderSummary(profile){
+  const root = document.getElementById("summary");
+
+  const sourceHtml = `
+    <div class="summary-card">
+      <strong>Source / Mimic</strong>
+      <div class="summary-line">${escapeHtml(profile.source || "Not set")}</div>
+    </div>
+  `;
+
+  const targetsHtml = profile.targets.map((target, index) => `
+    <div class="summary-card">
+      <strong>${escapeHtml(target.name || `Target ${index + 1}`)}</strong>
+      <div class="summary-line">${escapeHtml(target.path || "Path not set")}</div>
+      <div class="summary-line">Mode: ${escapeHtml(modeLabel(target.mode))}</div>
+    </div>
+  `).join("");
+
+  root.innerHTML = sourceHtml + targetsHtml;
+}
+
+function renderValidation(errors){
+  const root = document.getElementById("validationMessage");
+
+  if (!errors.length) {
+    root.innerHTML = `
+      <div class="notice good">
+        Configuration structure looks ready to export. The CLI will still validate the real paths and filesystem relationships before syncing.
+      </div>
+    `;
+    return;
+  }
+
+  root.innerHTML = `
+    <div class="notice warn">
+      <strong>Before export:</strong><br>
+      ${errors.map(error => `• ${escapeHtml(error)}`).join("<br>")}
+    </div>
+  `;
+}
+
+function refreshOutputs(){
+  const profile = getProfile();
+  const errors = validateProfile(profile);
+
+  renderSummary(profile);
+  renderValidation(errors);
+
+  const json = JSON.stringify(profile, null, 2);
+  document.getElementById("jsonOutput").textContent = json;
+
+  const cli = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\\mimic-sync.ps1" -Config ".\\mimic-sync.config.json"';
+  document.getElementById("cliOutput").textContent = cli;
+
+  const disabled = errors.length > 0;
+  document.getElementById("downloadBtn").disabled = disabled;
+}
+
+async function copyText(text, button){
+  let copied = false;
+
+  try{
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    }
+  }catch(err){}
+
+  if (!copied) {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.position = "fixed";
+    helper.style.opacity = "0";
+    document.body.appendChild(helper);
+    helper.select();
+
+    try{
+      copied = document.execCommand("copy");
+    }catch(err){}
+
+    helper.remove();
+  }
+
+  if (copied) {
+    const original = button.textContent;
+    button.textContent = "Copied";
+    setTimeout(() => button.textContent = original, 1200);
+  } else {
+    alert("Clipboard access was blocked by the browser. Please copy the visible text manually.");
+  }
+}
+
+function downloadConfig(){
+  const profile = getProfile();
+  const errors = validateProfile(profile);
+
+  if (errors.length) {
+    alert("Please complete the required configuration fields before downloading.");
+    return;
+  }
+
+  const json = JSON.stringify(profile, null, 2) + "\n";
+  const blob = new Blob([json], {type:"application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "mimic-sync.config.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("sourcePath").addEventListener("input", refreshOutputs);
+document.getElementById("addTargetBtn").addEventListener("click", addTarget);
+document.getElementById("downloadBtn").addEventListener("click", downloadConfig);
+
+document.getElementById("copyJsonBtn").addEventListener("click", function(){
+  copyText(document.getElementById("jsonOutput").textContent, this);
+});
+
+document.getElementById("copyCliBtn").addEventListener("click", function(){
+  copyText(document.getElementById("cliOutput").textContent, this);
+});
+
+renderTargets();
+</script>
+</body>
+</html>

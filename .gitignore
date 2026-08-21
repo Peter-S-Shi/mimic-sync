@@ -1,0 +1,19 @@
+# Local Sync Profiles
+mimic-sync.config.json
+config.json
+*.local.json
+
+# Runtime / test output
+tests/tmp/
+*.log
+.mimic-sync-*.tmp
+
+# Future local state
+.mimic-state.json
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

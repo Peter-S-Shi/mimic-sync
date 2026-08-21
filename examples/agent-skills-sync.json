@@ -1,0 +1,20 @@
+{
+  "source": "D:\\AI\\Skills\\Mimic",
+  "targets": [
+    {
+      "name": "Codex Skills",
+      "path": "D:\\Agents\\Codex\\skills",
+      "mode": "add-update"
+    },
+    {
+      "name": "Claude Skills",
+      "path": "D:\\Agents\\Claude\\skills",
+      "mode": "add-update"
+    },
+    {
+      "name": "Other Agent Skills",
+      "path": "D:\\Agents\\OtherAgent\\skills",
+      "mode": "add-only"
+    }
+  ]
+}

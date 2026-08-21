@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme/hero.webp" alt="Mimic Sync — configuration-driven folder sync for Windows" width="100%">
+  <img src="assets/readme/hero.svg" alt="Mimic Sync — configuration-driven folder sync for Windows" width="100%">
 </p>
 
 <h1 align="center">Mimic Sync</h1>
@@ -88,7 +88,7 @@ Keep shared content present and current while still preserving Target-only conte
 ## How it works
 
 <p align="center">
-  <img src="assets/readme/workflow.webp" alt="Mimic Sync workflow from configuration through read-only scan, sync plan, confirmation, execution, and report" width="100%">
+  <img src="assets/readme/workflow.svg" alt="Mimic Sync workflow from configuration through read-only scan, sync plan, confirmation, execution, and report" width="100%">
 </p>
 
 The execution boundary is deliberate:
@@ -108,7 +108,7 @@ The browser Configurator defines intent. The PowerShell CLI remains the only V1 
 A practical use case is maintaining a common set of reusable skills across multiple agent environments without deleting agent-specific skills.
 
 <p align="center">
-  <img src="assets/readme/agent-skills-use-case.webp" alt="Illustrated Mimic Sync use case distributing skill-1, skill-2, and skill-3 from one Mimic source into Claude, Codex, and Gemini skill folders while preserving local-only skills" width="100%">
+  <img src="assets/readme/agent-skills-use-case.svg" alt="Illustrated Mimic Sync use case distributing skill-1, skill-2, and skill-3 from one Mimic source into Claude, Codex, and Gemini skill folders while preserving local-only skills" width="100%">
 </p>
 
 > **Illustrated use case:** the image explains the synchronization relationship; it is not presented as a screenshot of the CLI.

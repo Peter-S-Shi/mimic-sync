@@ -1,208 +1,154 @@
-# Mimic Sync
+<p align="center">
+  <img src="assets/readme/hero.webp" alt="Mimic Sync — configuration-driven folder sync for Windows" width="100%">
+</p>
 
-Mimic Sync is a lightweight, configuration-driven folder replication utility for Windows.
+<h1 align="center">Mimic Sync</h1>
 
-It lets you maintain one baseline folder and selectively distribute its content into multiple target folders, while preserving target-specific content that does not exist in the source.
+<p align="center">
+  <strong>Configuration-driven folder sync for Windows.</strong><br>
+  Distribute shared content from one source to multiple targets with per-target policies — while preserving target-only files.
+</p>
 
-```text
-                 Source / Mimic
-                      M
-                      │
-          ┌───────────┼───────────┐
-          ▼           ▼           ▼
-       Target A    Target B    Target C
-       add-update  add-only    update-only
-```
+<p align="center">
+  Windows · PowerShell · Config-driven · Safe by design · MIT
+</p>
 
-Mimic Sync is designed for repeated-content management across folders.
-
-Common examples include:
-
-- shared project templates;
-- reusable scripts;
-- common configuration files;
-- reference assets;
-- repeated workspace resources;
-- AI-agent skills shared across Codex, Claude, or other agent environments.
-
-AI-agent skills are an important reference use case, but Mimic Sync itself is not limited to AI tooling.
+<p align="center">
+  <strong>V1 Released / Release Verified</strong>
+</p>
 
 ---
 
 ## Why Mimic Sync?
 
-A common workflow looks like this:
+Shared folders are easy to copy once. They become harder to maintain when the same baseline content must stay available across several independent workspaces — especially when each destination also contains local files that must not be treated as disposable.
+
+Mimic Sync solves that narrow problem with a one-way, preview-first model:
 
 ```text
-Shared content
-├── template A
-├── script B
-└── config C
+one Source / Mimic folder
+        ↓
+multiple independent Targets
+        ↓
+per-target sync policy
 ```
 
-needs to exist across several independent folders:
+It is intentionally **not** a destructive mirror. Content that exists only in a Target remains outside the V1 managed scope and is preserved.
 
-```text
-Project A
-Project B
-Project C
-```
-
-Manual copying works at first, but becomes tedious when shared content changes over time.
-
-Full mirror synchronization is often too aggressive because each target may also contain its own local files.
-
-Mimic Sync uses a safer model:
-
-> Keep shared content manageable without forcing every target folder to become an identical mirror.
-
-Target-only content is preserved in V1.
+Typical uses include shared templates, reusable scripts, common configuration, reference assets, workspace resources, and AI-agent skill folders.
 
 ---
 
-## Core Workflow
+## Verified on real Windows runs
 
-Mimic Sync separates configuration from execution.
+Mimic Sync's public claims are backed by the repository's release verification rather than by a mock demo.
 
-```text
-Web Configurator
-      │
-      ▼
-JSON Sync Profile
-      │
-      ▼
-PowerShell CLI
-      │
-      ▼
-Read-only Scan
-      │
-      ▼
-Actual Sync Plan
-      │
-      ▼
-Proceed with sync? [Y/n]
-      │
-      ▼
-Execute
-      │
-      ▼
-Per-target Report
+| Evidence | Result |
+|---|---:|
+| Manual acceptance on Windows | **PASS** |
+| Baseline automated verification | **42 / 42 PASS** |
+| Expanded hardening verification | **63 / 63 PASS** |
+| Browser Configurator manual QA | **PASS** |
+
+The verification suite covers the three sync policies, repeat-run idempotency, cancellation before writes, target-only preservation, spaces and Unicode paths, duplicate/overlapping targets, unsafe path relationships, file/directory collisions, locked-file failures, temporary-file cleanup, and Junction/reparse-point boundaries.
+
+Run the fixture suite yourself:
+
+```powershell
+.\tests\run-tests.ps1
 ```
-
-The browser-based Configurator defines what you want.
-
-The PowerShell CLI inspects the real filesystem, determines what actually needs to change, shows the Sync Plan, and performs writes only after confirmation.
 
 ---
 
-## Synchronization Modes
+## Three sync modes
 
-Each target can use its own synchronization policy.
+Every Target chooses its own policy. A single profile can mix all three modes.
+
+| Target state | Add Only | Update Only | Add + Update |
+|---|---:|---:|---:|
+| Source item is missing in Target | **ADD** | Skip | **ADD** |
+| Source and Target are identical | Skip | Skip | Skip |
+| Same path exists but content differs | Skip | **UPDATE** | **UPDATE** |
+| Item exists only in Target | Preserve | Preserve | Preserve |
 
 ### Add Only
 
-Adds missing source content but does not overwrite content already present in the target.
-
-```text
-Missing in Target  → ADD
-Already exists     → SKIP
-Target-only        → IGNORE
-```
+Fill gaps without overwriting anything that already exists in the Target.
 
 ### Update Only
 
-Updates existing target content when the corresponding source content differs, but does not add source items that are missing from the target.
-
-```text
-Missing in Target  → SKIP
-Different          → UPDATE
-Same               → SKIP
-Target-only        → IGNORE
-```
+Refresh an already-approved subset without introducing new Source items.
 
 ### Add + Update
 
-Adds missing source content and updates existing differing content.
-
-```text
-Missing in Target  → ADD
-Different          → UPDATE
-Same               → SKIP
-Target-only        → IGNORE
-```
+Keep shared content present and current while still preserving Target-only content.
 
 ---
 
-## V1 Policy Matrix
+## How it works
 
-| State | Add Only | Update Only | Add + Update |
-|---|---|---|---|
-| Missing in Target | Add | Skip | Add |
-| Same | Skip | Skip | Skip |
-| Different | Skip | Update | Update |
-| Target-only | Ignore | Ignore | Ignore |
+<p align="center">
+  <img src="assets/readme/workflow.webp" alt="Mimic Sync workflow from configuration through read-only scan, sync plan, confirmation, execution, and report" width="100%">
+</p>
 
-Mimic Sync V1 never automatically deletes target-only content.
+The execution boundary is deliberate:
+
+1. **Configure** one Source and one or more Targets in JSON or with the browser Configurator.
+2. **Scan read-only** and compare real filesystem state.
+3. **Preview the Sync Plan** with exact relative paths before mutation.
+4. **Confirm with `Y/n`**. Answering `n` exits without writes.
+5. **Execute and report** the successful adds, updates, directory creation, and any failures per Target.
+
+The browser Configurator defines intent. The PowerShell CLI remains the only V1 component that scans and mutates the filesystem.
 
 ---
 
-## Repository Structure
+## Use case: one shared skill source, multiple AI agents
+
+A practical use case is maintaining a common set of reusable skills across multiple agent environments without deleting agent-specific skills.
+
+<p align="center">
+  <img src="assets/readme/agent-skills-use-case.webp" alt="Illustrated Mimic Sync use case distributing skill-1, skill-2, and skill-3 from one Mimic source into Claude, Codex, and Gemini skill folders while preserving local-only skills" width="100%">
+</p>
+
+> **Illustrated use case:** the image explains the synchronization relationship; it is not presented as a screenshot of the CLI.
+
+For example, one profile can define:
 
 ```text
-mimic-sync/
-│
-├── README.md
-├── LICENSE
-├── .gitignore
-│
-├── mimic-sync.ps1
-├── Mimic Sync.bat
-├── config.example.json
-│
-├── configurator/
-│   └── index.html
-│
-├── docs/
-│   ├── architecture.md
-│   ├── sync-model.md
-│   └── roadmap.md
-│
-├── examples/
-│   ├── generic-folder-sync.json
-│   └── agent-skills-sync.json
-│
-└── tests/
-    ├── run-tests.ps1
-    └── fixtures/
-        ├── mimic/
-        ├── target-a/
-        ├── target-b/
-        └── target-c/
+Mimic Skills
+├── skill-1
+├── skill-2
+└── skill-3
+
+        ├──→ .claude/skills   Add + Update
+        ├──→ .codex/skills    Add + Update
+        └──→ .gemini/skills   Add Only
 ```
+
+Each destination can still retain its own local-only content because V1 never interprets Target-only files as deletion candidates.
+
+The same engine is domain-neutral: substitute project templates, scripts, configs, or any other repeated folder content and the synchronization model stays the same.
 
 ---
 
 ## Quick Start
 
-### 1. Create a config
+### 1. Prepare a config
 
-Copy:
+Copy the tracked example:
 
 ```text
 config.example.json
 ```
 
-to:
+as:
 
 ```text
 mimic-sync.config.json
 ```
 
-Then edit the paths and modes.
-
-In V1, the Source and Target root folders must already exist. Relative paths are resolved from the config file directory, and Windows environment variables in paths are expanded by the CLI.
-
-Example:
+Then define your Source, Targets, and policy for each Target:
 
 ```json
 {
@@ -227,7 +173,9 @@ Example:
 }
 ```
 
-### 2. Run Mimic Sync
+In V1, the Source and Target root folders must already exist. Relative paths are resolved from the config file directory, and Windows environment variables in configured paths are expanded by the CLI.
+
+### 2. Run
 
 From PowerShell:
 
@@ -241,316 +189,123 @@ Or double-click:
 Mimic Sync.bat
 ```
 
-The BAT launcher uses `mimic-sync.config.json` from the repository directory by default. You can also drag another JSON profile onto `Mimic Sync.bat` to run that profile.
+You can also drag a JSON profile onto `Mimic Sync.bat`. If no default profile exists, the launcher explains the available options instead of failing silently.
 
-### 3. Review the Sync Plan
+### 3. Review before approving
 
-Before any write, Mimic Sync performs a read-only scan.
-
-Example:
+A real run pauses at the Sync Plan:
 
 ```text
-SYNC PLAN
-
 Target: Project Alpha
 Mode: add-update
 
-  [ADD]    templates
-  [UPDATE] shared-config
-
-Target: Project Beta
-Mode: add-only
-
-  [ADD]    scripts
+  [ADD]    templates\new-template.md
+  [UPDATE] shared-config\settings.json
+  [MKDIR]  scripts\helpers
 
 Proceed with sync? [Y/n]
 ```
 
-Press `Y` or just Enter to continue.
-
-Press `n` to cancel without changing target files.
+Press `Y` or Enter to proceed. Press `n` to exit with no writes.
 
 ---
 
-## Web Configurator
+## Browser Configurator
 
-Open:
+Open [`configurator/index.html`](configurator/index.html) locally when you prefer a visual way to build the JSON profile.
 
-```text
-configurator/index.html
-```
+It supports:
 
-in a browser.
+- Source path entry;
+- dynamic Target add/remove;
+- independent mode selection per Target;
+- configuration summary;
+- JSON export;
+- ready-to-copy CLI command;
+- plain-language parameter guidance.
 
-The Configurator lets you:
-
-- enter the Source path;
-- add or remove Targets;
-- give each Target a name;
-- choose an independent synchronization mode;
-- review a configuration summary;
-- download the generated JSON profile;
-- copy a ready-to-run PowerShell command;
-- read simple parameter explanations.
-
-The Configurator does not directly synchronize files.
-
-It generates configuration. After downloading `mimic-sync.config.json`, place it next to `mimic-sync.ps1` or adjust the CLI `-Config` path. The CLI performs the real filesystem scan and execution.
+The Configurator does **not** claim to know actual ADD/UPDATE actions. Only the CLI can derive the real Sync Plan from the filesystem.
 
 ---
 
-## Generic Example
+## Engineering decisions behind the safety model
 
-Suppose you maintain:
+Mimic Sync is small, but the release focuses heavily on predictable filesystem behavior.
 
-```text
-D:\Shared-Resources
-```
+- **Content-based comparison** — file size plus SHA-256 determines `SAME` vs `DIFFERENT`; timestamps alone are not authoritative.
+- **Preview-before-mutation** — no planned write executes until the user confirms the derived Sync Plan.
+- **Execution-time drift checks** — the engine revalidates Source/Target state before planned writes and refuses a blind overwrite when the Target changed after preview.
+- **Staged writes and cleanup** — ADD operations use temporary staging; UPDATE failures use best-effort rollback and cleanup behavior.
+- **Path safety** — identical, nested, overlapping, and reparse-point-routed Source/Target relationships are rejected when unsafe.
+- **Target ownership** — absence from the Source never becomes an automatic delete instruction in V1.
 
-containing:
-
-```text
-templates
-scripts
-shared-config
-```
-
-and want to distribute those resources across:
-
-```text
-Project Alpha
-Project Beta
-Project Gamma
-```
-
-while allowing each project to retain its own local content.
-
-Mimic Sync can assign a different mode to each destination:
-
-```text
-Shared-Resources
-│
-├── Project Alpha → Add + Update
-├── Project Beta  → Add Only
-└── Project Gamma → Update Only
-```
-
-No project is forced to become a full mirror of the source.
+For the deeper contracts, see [Architecture](docs/architecture.md) and the authoritative [Sync Model](docs/sync-model.md).
 
 ---
 
-## AI-Agent Skills Example
+## V1 boundaries
 
-One practical use case is maintaining a shared set of AI-agent skills.
+Mimic Sync V1 is intentionally narrow. It does **not** implement:
 
-```text
-Mimic Skills
-│
-├── shared-skill-a
-├── shared-skill-b
-└── shared-skill-c
-```
-
-distributed into:
-
-```text
-Codex Skills
-Claude Skills
-Other Agent Skills
-```
-
-Each agent may still retain its own exclusive skills.
-
-Because target-only content is outside the V1 managed scope, agent-specific skills remain untouched.
-
-See:
-
-```text
-examples/agent-skills-sync.json
-```
-
----
-
-## Safety Model
-
-Mimic Sync V1 follows these rules:
-
-```text
-No automatic deletion.
-No purge behavior.
-No mirror semantics.
-No bidirectional synchronization.
-No modification of target-only content.
-No write before explicit confirmation.
-No Junction / reparse-point traversal in managed V1 paths.
-No blind overwrite when the filesystem changed after preview.
-```
-
-It also rejects unsafe Source/Target relationships such as identical, recursively nested, overlapping, or reparse-point-routed paths. Before each planned write, the engine revalidates the scanned Source/Target state; UPDATE actions refuse to overwrite a Target file that changed after the Sync Plan was shown.
-
----
-
-## File Comparison
-
-V1 compares actual file content instead of relying only on modification timestamps.
-
-```text
-File size
-→ if equal, SHA-256
-→ SAME or DIFFERENT
-```
-
----
-
-## Reparse Points and Junctions
-
-Mimic Sync V1 does not traverse reparse-point content during recursive scanning.
-
-Directory Junctions and other shared-reference approaches are reserved for future architectural exploration.
-
-V1 uses replication:
-
-```text
-Source
-  ↓
-copy / update
-  ↓
-Targets
-```
-
-A future version may explore shared references instead.
-
----
-
-## Testing
-
-The repository includes controlled test fixtures.
-
-Run:
-
-```powershell
-.\tests\run-tests.ps1
-```
-
-The test harness copies fixture data into:
-
-```text
-tests\tmp\
-```
-
-and performs test operations only inside that temporary area.
-
-Verification coverage includes:
-
-- Add Only;
-- Update Only;
-- Add + Update;
-- missing content;
-- outdated content;
-- identical content;
-- target-only preservation;
-- nested folders;
-- spaces in paths;
-- Unicode paths;
-- mixed per-target policies;
-- cancellation before write;
-- repeated runs;
-- invalid Source paths;
-- unsafe Source/Target nesting;
-- duplicate and overlapping Targets;
-- empty Source behavior;
-- locked-file execution failure;
-- Junction / reparse-point protection where the filesystem supports the fixture.
-
-The pre-hardening Windows baseline completed **42 assertions with 0 failures**, together with a separate manual acceptance trial covering all three synchronization policies, repeat-run idempotency, Source removal behavior, and the `Y/n` confirmation gate.
-
-The expanded hardening suite subsequently completed **63 assertions with 0 failures** on the target Windows environment. It adds coverage for stronger path/reparse-point safety, duplicate and overlapping Targets, empty Source behavior, locked-file failure handling, exact Sync Plan paths, temporary-file cleanup, and other release-boundary cases.
-
----
-
-## Current Status
-
-Mimic Sync V1 is **Released / Release Verified**.
-
-The V1 feature set is frozen. The core synchronization contract has passed a real Windows manual acceptance trial; the original automated fixture baseline passed **42/42**; and the expanded V1 hardening suite passed **63/63**. The Configurator has also completed browser-side manual QA for its V1 configuration workflow.
-
-The released V1 includes execution-time drift protection, stronger reparse-point path validation, staged ADD writes, best-effort UPDATE rollback, exact relative-path Sync Plan output, improved BAT/config UX, and expanded negative/boundary verification.
-
-The V1 RC was committed to the public `main` branch and the intended release commit was verified remotely. V1 is now closed for feature development; future capabilities belong in V2/Future unless required to fix a release-blocking defect.
-
-See:
-
-```text
-docs/roadmap.md
-```
-
-for the development lifecycle.
-
----
-
-## V1 Non-Goals
-
-V1 intentionally does not include:
-
-- automatic deletion;
+- automatic deletion or purge;
 - full mirror synchronization;
 - bidirectional sync;
-- conflict merging;
-- `.mimic-state.json`;
-- stale/exclusive historical classification;
+- automatic conflict merging;
+- historical managed/stale/exclusive classification;
 - rename detection;
-- filesystem watching;
-- background sync;
-- Directory Junction distribution;
-- symbolic-link distribution;
+- background filesystem watching;
+- Directory Junction or symbolic-link distribution;
 - cloud synchronization;
-- EXE packaging;
-- Electron or Tauri packaging;
+- EXE / Electron / Tauri packaging;
 - direct filesystem mutation from the Web Configurator.
 
----
+These exclusions are part of the safety contract rather than unfinished hidden behavior.
 
-## V2 Direction
+### V2 direction
 
-V2 may introduce historical state through:
+A future state-aware version may introduce `.mimic-state.json` so Mimic Sync can distinguish historically managed content from truly local-exclusive content and surface **possible rename** cases without unsafe guessing.
 
-```text
-.mimic-state.json
-```
-
-This could support distinctions such as:
-
-```text
-MANAGED
-STALE
-EXCLUSIVE
-POSSIBLE RENAME
-```
-
-A specific V2 concern is rename detection: a previously managed folder disappearing from the Source and a new folder appearing should not automatically be treated as unrelated `STALE + NEW` when evidence may indicate a rename.
+Shared-reference / Junction distribution remains a separate future architecture because its ownership and failure semantics differ from replication.
 
 ---
 
-## Future Direction
+## Repository map
 
-A later version may explore shared-reference distribution through Windows Directory Junctions or related linking strategies.
-
-That model could reduce duplicated physical storage, but it introduces different requirements around NTFS behavior, path availability, permissions, broken references, backup behavior, portability, and ownership semantics.
-
-It remains outside the V1 scope.
+```text
+mimic-sync/
+├── mimic-sync.ps1            # execution engine
+├── Mimic Sync.bat            # one-click launcher
+├── config.example.json       # tracked configuration example
+├── configurator/index.html   # browser-based profile builder
+├── examples/                 # generic + agent-skill profiles
+├── tests/                    # fixture integration / hardening suite
+├── docs/
+│   ├── architecture.md
+│   ├── sync-model.md
+│   └── roadmap.md
+└── assets/readme/            # README presentation assets
+```
 
 ---
 
 ## Documentation
 
-For deeper details:
+- [Architecture](docs/architecture.md) — component boundaries and V1 architecture
+- [Sync Model](docs/sync-model.md) — authoritative policy/state behavior
+- [Roadmap](docs/roadmap.md) — V1 lifecycle closure and future directions
+- [Generic folder example](examples/generic-folder-sync.json)
+- [AI-agent skills example](examples/agent-skills-sync.json)
 
-- `docs/architecture.md` — product architecture and component responsibilities;
-- `docs/sync-model.md` — authoritative V1 synchronization behavior;
-- `docs/roadmap.md` — milestone plan, V2 direction, and release lifecycle.
+---
+
+## Release status
+
+**Mimic Sync V1 is Released / Release Verified.**
+
+The V1 feature set is frozen. Manual acceptance, baseline verification, expanded hardening, Configurator QA, and remote release-commit verification are complete. Future feature work belongs in V2/Future unless a release-blocking V1 defect is discovered.
 
 ---
 
 ## License
 
-This repository is provided under the MIT License. See `LICENSE`.
+MIT — see [LICENSE](LICENSE).
